@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>equalization.rocks</title>
+  <script src="https://kit.webawesome.com/c091c003930a4b78.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <wa-page>
+    <header slot="header">
+      <span class="wa-heading-xl"><wa-icon name="message-music"></wa-icon> Equalization Rocks!</span>
+      <div class="wa-cluster wa-gap-xs">
+        <wa-dropdown id="theme-dropdown">
+          <wa-button slot="trigger" appearance="plain">
+            <wa-icon id="theme-icon" name="circle-half-stroke"></wa-icon>
+          </wa-button>
+          <wa-dropdown-item value="auto">
+            <wa-icon slot="icon" name="circle-half-stroke"></wa-icon>
+            Auto
+          </wa-dropdown-item>
+          <wa-dropdown-item value="light">
+            <wa-icon slot="icon" name="sun-bright"></wa-icon>
+            Light
+          </wa-dropdown-item>
+          <wa-dropdown-item value="dark">
+            <wa-icon slot="icon" name="moon"></wa-icon>
+            Dark
+          </wa-dropdown-item>
+        </wa-dropdown>
+        <wa-dropdown id="add-dropdown">
+          <wa-button slot="trigger" variant="brand" with-caret>
+            <wa-icon slot="start" name="plus"></wa-icon>
+            Add
+          </wa-button>
+          <wa-dropdown-item value="equalization">
+            <wa-icon slot="icon" name="sliders"></wa-icon>
+            Equalization
+          </wa-dropdown-item>
+          <wa-dropdown-item value="compressor">
+            <wa-icon slot="icon" name="compress"></wa-icon>
+            Compressor
+          </wa-dropdown-item>
+          <wa-dropdown-item value="delay">
+            <wa-icon slot="icon" name="clock"></wa-icon>
+            Delay
+          </wa-dropdown-item>
+        </wa-dropdown>
+      </div>
+    </header>
+
+    <div id="chain" class="wa-stack wa-align-items-center wa-gap-0"></div>
+  </wa-page>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
