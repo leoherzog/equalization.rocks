@@ -27,6 +27,10 @@ A client-side audio effects chain builder with real-time Web Audio API processin
   - **Equalization**: 9-band graphic EQ (32 Hz–16 kHz) using peaking BiquadFilterNodes. Vertical sliders inside a `<wa-scroller>` for mobile support. Has a reset button.
   - **Compressor**: DynamicsCompressorNode with threshold, ratio, attack, release
   - **Delay**: DelayNode with feedback loop (capped at 0.95) and dry/wet mix
+  - **Reverb**: ConvolverNode with procedurally generated impulse response (exponentially decaying stereo noise). Decay (0.1–5s) and dry/wet mix. IR buffer regenerated on slider input.
+  - **Distortion**: WaveShaperNode with soft-clip transfer curve and 4x oversampling. Drive (0–100) and dry/wet mix.
+  - **Noise Gate**: AnalyserNode + GainNode with 20ms polling loop computing RMS→dB. Gate opens/closes via `setTargetAtTime` ramps. Threshold, attack, release. Polling interval cleaned up via `group.cleanup()` in `disconnectNodeGroup`.
+  - **Stereo Panner**: StereoPannerNode with single pan parameter (-1 to 1). Slider uses -100 to 100 integer range.
 - **Controls**: EQ uses vertical `<wa-slider>` elements (9-band) in a `<wa-scroller>`; compressor and delay use horizontal `<wa-slider>` stacks. Output card has a volume slider controlling a GainNode.
 - **Source card**: Uses `<wa-file-input>` for audio file selection with drag-and-drop support. Native `<audio>` element for playback with volume slider hidden via CSS (volume controlled by output GainNode).
 - **Shared helper**: `makeSlider(opts)` builds configured `<wa-slider>` elements with formatter, input binding, and optional `hint` text (used on horizontal sliders)

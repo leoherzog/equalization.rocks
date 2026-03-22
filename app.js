@@ -17,6 +17,30 @@ const EFFECTS = {
     description: 'Adds an echo by repeating the sound after a short pause.',
     defaults: { time: 250, feedback: 30, mix: 50 },
   },
+  reverb: {
+    label: 'Reverb',
+    icon: 'church',
+    description: 'Simulates the sound of a room, from a small closet to a cathedral.',
+    defaults: { decay: 2, mix: 50 },
+  },
+  distortion: {
+    label: 'Distortion',
+    icon: 'bolt',
+    description: 'Adds grit and crunch by clipping the audio signal.',
+    defaults: { drive: 50, mix: 50 },
+  },
+  gate: {
+    label: 'Noise Gate',
+    icon: 'door-closed',
+    description: 'Silences the sound when it drops below a certain volume, cutting out background noise.',
+    defaults: { threshold: -40, attack: 5, release: 50 },
+  },
+  panner: {
+    label: 'Stereo Panner',
+    icon: 'arrows-left-right',
+    description: 'Moves the sound left or right in the stereo field.',
+    defaults: { pan: 0 },
+  },
 };
 
 const EQ_FREQUENCIES = [32, 64, 125, 250, 500, 1000, 2000, 8000, 16000];
@@ -66,6 +90,10 @@ function createAudioNodes(effect) {
   if (effect.type === 'equalization') return createEqNodes(effect);
   if (effect.type === 'compressor') return createCompressorNodes(effect);
   if (effect.type === 'delay') return createDelayNodes(effect);
+  if (effect.type === 'reverb') return createReverbNodes(effect);
+  if (effect.type === 'distortion') return createDistortionNodes(effect);
+  if (effect.type === 'gate') return createGateNodes(effect);
+  if (effect.type === 'panner') return createPannerNodes(effect);
 }
 
 function createEqNodes(effect) {
@@ -122,7 +150,124 @@ function createDelayNodes(effect) {
   return { input, output };
 }
 
+function makeImpulseResponse(decay) {
+  const rate = audioCtx.sampleRate;
+  const length = Math.max(rate * decay, 1);
+  const buffer = audioCtx.createBuffer(2, length, rate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buffer.getChannelData(ch);
+    for (let i = 0; i < length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+    }
+  }
+  return buffer;
+}
+
+function createReverbNodes(effect) {
+  const input = audioCtx.createGain();
+  const output = audioCtx.createGain();
+  const convolver = audioCtx.createConvolver();
+  convolver.buffer = makeImpulseResponse(effect.params.decay);
+  const dry = audioCtx.createGain();
+  const wet = audioCtx.createGain();
+
+  const mixVal = effect.params.mix / 100;
+  dry.gain.value = 1 - mixVal;
+  wet.gain.value = mixVal;
+
+  input.connect(dry);
+  dry.connect(output);
+  input.connect(convolver);
+  convolver.connect(wet);
+  wet.connect(output);
+
+  effect._audioNodes = { type: 'reverb', convolver, dry, wet };
+  return { input, output };
+}
+
+function makeDistortionCurve(drive) {
+  const k = drive * 2;
+  const samples = 44100;
+  const curve = new Float32Array(samples);
+  for (let i = 0; i < samples; i++) {
+    const x = (i * 2) / samples - 1;
+    curve[i] = ((Math.PI + k) * x) / (Math.PI + k * Math.abs(x));
+  }
+  return curve;
+}
+
+function createDistortionNodes(effect) {
+  const input = audioCtx.createGain();
+  const output = audioCtx.createGain();
+  const shaper = audioCtx.createWaveShaper();
+  shaper.curve = makeDistortionCurve(effect.params.drive);
+  shaper.oversample = '4x';
+  const dry = audioCtx.createGain();
+  const wet = audioCtx.createGain();
+
+  const mixVal = effect.params.mix / 100;
+  dry.gain.value = 1 - mixVal;
+  wet.gain.value = mixVal;
+
+  input.connect(dry);
+  dry.connect(output);
+  input.connect(shaper);
+  shaper.connect(wet);
+  wet.connect(output);
+
+  effect._audioNodes = { type: 'distortion', shaper, dry, wet };
+  return { input, output };
+}
+
+function createGateNodes(effect) {
+  const input = audioCtx.createGain();
+  const output = audioCtx.createGain();
+  const analyser = audioCtx.createAnalyser();
+  const gateGain = audioCtx.createGain();
+
+  analyser.fftSize = 2048;
+  const dataArray = new Float32Array(analyser.fftSize);
+
+  input.connect(analyser);
+  analyser.connect(gateGain);
+  gateGain.connect(output);
+
+  let isOpen = true;
+  const intervalId = setInterval(() => {
+    analyser.getFloatTimeDomainData(dataArray);
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) sum += dataArray[i] * dataArray[i];
+    const rms = Math.sqrt(sum / dataArray.length);
+    const dB = rms > 0 ? 20 * Math.log10(rms) : -Infinity;
+
+    const now = audioCtx.currentTime;
+    if (dB >= effect.params.threshold && !isOpen) {
+      isOpen = true;
+      gateGain.gain.cancelScheduledValues(now);
+      gateGain.gain.setTargetAtTime(1, now, effect.params.attack / 1000 / 3);
+    } else if (dB < effect.params.threshold && isOpen) {
+      isOpen = false;
+      gateGain.gain.cancelScheduledValues(now);
+      gateGain.gain.setTargetAtTime(0, now, effect.params.release / 1000 / 3);
+    }
+  }, 20);
+
+  effect._audioNodes = { type: 'gate', analyser, gateGain };
+
+  const group = { input, output };
+  group.cleanup = () => clearInterval(intervalId);
+  return group;
+}
+
+function createPannerNodes(effect) {
+  const panner = audioCtx.createStereoPanner();
+  panner.pan.value = effect.params.pan;
+  effect._audioNodes = { type: 'panner', panner };
+  return { input: panner, output: panner };
+}
+
 function disconnectNodeGroup(group) {
+  group.cleanup?.();
   group.input.disconnect();
   if (group.output !== group.input) group.output.disconnect();
 }
@@ -345,10 +490,109 @@ function createDelayControls(effect) {
   return container;
 }
 
+function createReverbControls(effect) {
+  const container = document.createElement('div');
+  container.className = 'wa-stack wa-gap-s';
+  const params = [
+    { key: 'decay', label: 'Decay', min: 0.1, max: 5, step: 0.1, formatter: v => `${v} s`, hint: 'How long the reverb tail lasts — longer feels like a bigger room.' },
+    { key: 'mix', label: 'Mix', min: 0, max: 100, step: 1, formatter: v => `${v}%`, hint: 'How much reverb you hear compared to the original sound.' },
+  ];
+  for (const p of params) {
+    container.appendChild(makeSlider({
+      label: p.label, hint: p.hint,
+      min: p.min, max: p.max, value: effect.params[p.key], step: p.step,
+      formatter: p.formatter,
+      onInput: v => {
+        effect.params[p.key] = v;
+        const nodes = effect._audioNodes;
+        if (!nodes) return;
+        if (p.key === 'decay') nodes.convolver.buffer = makeImpulseResponse(v);
+        else if (p.key === 'mix') {
+          nodes.dry.gain.value = 1 - (v / 100);
+          nodes.wet.gain.value = v / 100;
+        }
+      },
+    }));
+  }
+  return container;
+}
+
+function createDistortionControls(effect) {
+  const container = document.createElement('div');
+  container.className = 'wa-stack wa-gap-s';
+  const params = [
+    { key: 'drive', label: 'Drive', min: 0, max: 100, step: 1, formatter: v => `${v}%`, hint: 'How much the sound gets crunched and distorted.' },
+    { key: 'mix', label: 'Mix', min: 0, max: 100, step: 1, formatter: v => `${v}%`, hint: 'How much distortion you hear compared to the original sound.' },
+  ];
+  for (const p of params) {
+    container.appendChild(makeSlider({
+      label: p.label, hint: p.hint,
+      min: p.min, max: p.max, value: effect.params[p.key], step: p.step,
+      formatter: p.formatter,
+      onInput: v => {
+        effect.params[p.key] = v;
+        const nodes = effect._audioNodes;
+        if (!nodes) return;
+        if (p.key === 'drive') nodes.shaper.curve = makeDistortionCurve(v);
+        else if (p.key === 'mix') {
+          nodes.dry.gain.value = 1 - (v / 100);
+          nodes.wet.gain.value = v / 100;
+        }
+      },
+    }));
+  }
+  return container;
+}
+
+function createGateControls(effect) {
+  const container = document.createElement('div');
+  container.className = 'wa-stack wa-gap-s';
+  const params = [
+    { key: 'threshold', label: 'Threshold', min: -80, max: 0, step: 1, formatter: v => `${v} dB`, hint: 'Sounds quieter than this get silenced.' },
+    { key: 'attack', label: 'Attack', min: 0, max: 100, step: 1, formatter: v => `${v} ms`, hint: 'How quickly the gate opens when sound is detected.' },
+    { key: 'release', label: 'Release', min: 5, max: 500, step: 5, formatter: v => `${v} ms`, hint: 'How quickly the gate closes after the sound stops.' },
+  ];
+  for (const p of params) {
+    container.appendChild(makeSlider({
+      label: p.label, hint: p.hint,
+      min: p.min, max: p.max, value: effect.params[p.key], step: p.step,
+      formatter: p.formatter,
+      onInput: v => { effect.params[p.key] = v; },
+    }));
+  }
+  return container;
+}
+
+function createPannerControls(effect) {
+  const container = document.createElement('div');
+  container.className = 'wa-stack wa-gap-s';
+  container.appendChild(makeSlider({
+    label: 'Pan', hint: 'Move the sound between the left and right speakers.',
+    min: -100, max: 100, value: effect.params.pan * 100, step: 1,
+    formatter: v => {
+      const val = v / 100;
+      if (val < -0.01) return `${Math.round(Math.abs(val) * 100)}% L`;
+      if (val > 0.01) return `${Math.round(val * 100)}% R`;
+      return 'Center';
+    },
+    onInput: v => {
+      effect.params.pan = v / 100;
+      if (effect._audioNodes?.panner) {
+        effect._audioNodes.panner.pan.value = v / 100;
+      }
+    },
+  }));
+  return container;
+}
+
 const CONTROLS_BUILDER = {
   equalization: createEqControls,
   compressor: createCompressorControls,
   delay: createDelayControls,
+  reverb: createReverbControls,
+  distortion: createDistortionControls,
+  gate: createGateControls,
+  panner: createPannerControls,
 };
 
 function createEffectCard(effect, index, total) {
