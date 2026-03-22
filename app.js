@@ -2,16 +2,19 @@ const EFFECTS = {
   equalization: {
     label: 'Equalization',
     icon: 'sliders',
+    description: 'Changes the volume on specific lower or higher frequencies which changes how things sound.',
     defaults: { sub: 0, low: 0, lowMid: 0, mid: 0, highMid: 0, presence: 0, high: 0, brilliance: 0, air: 0 },
   },
   compressor: {
     label: 'Compressor',
     icon: 'compress',
+    description: 'Makes the quiet parts louder and the loud parts quieter.',
     defaults: { threshold: -24, ratio: 4, attack: 10, release: 100 },
   },
   delay: {
     label: 'Delay',
     icon: 'clock',
+    description: 'Adds an echo by repeating the sound after a short pause.',
     defaults: { time: 250, feedback: 30, mix: 50 },
   },
 };
@@ -232,6 +235,7 @@ function makeSlider(opts) {
   slider.setAttribute('step', opts.step);
   slider.setAttribute('size', 'small');
   slider.setAttribute('with-tooltip', '');
+  if (opts.hint) slider.setAttribute('hint', opts.hint);
   if (opts.orientation) slider.setAttribute('orientation', opts.orientation);
   if (opts.indicatorOffset != null) slider.setAttribute('indicator-offset', opts.indicatorOffset);
   customElements.whenDefined('wa-slider').then(() => {
@@ -243,16 +247,17 @@ function makeSlider(opts) {
 
 function createEqControls(effect) {
   const bands = [
-    { key: 'sub', label: '32 Hz' },
-    { key: 'low', label: '64 Hz' },
-    { key: 'lowMid', label: '125 Hz' },
-    { key: 'mid', label: '250 Hz' },
-    { key: 'highMid', label: '500 Hz' },
-    { key: 'presence', label: '1 kHz' },
-    { key: 'high', label: '2 kHz' },
-    { key: 'brilliance', label: '8 kHz' },
-    { key: 'air', label: '16 kHz' },
+    { key: 'sub', label: '32 Hz', tooltip: 'Sub-bass — the deep rumble you feel more than hear.' },
+    { key: 'low', label: '64 Hz', tooltip: 'Bass — the thump of kick drums and bass guitars.' },
+    { key: 'lowMid', label: '125 Hz', tooltip: 'Low mids — adds warmth and body to sounds.' },
+    { key: 'mid', label: '250 Hz', tooltip: 'Mids — where most vocals and instruments live.' },
+    { key: 'highMid', label: '500 Hz', tooltip: 'Upper mids — controls clarity and punch.' },
+    { key: 'presence', label: '1 kHz', tooltip: 'Presence — makes sounds feel closer and more detailed.' },
+    { key: 'high', label: '2 kHz', tooltip: 'Highs — adds brightness and edge to sounds.' },
+    { key: 'brilliance', label: '8 kHz', tooltip: 'Brilliance — the sparkle and shimmer of cymbals and strings.' },
+    { key: 'air', label: '16 kHz', tooltip: 'Air — the very top, adds openness and space.' },
   ];
+  let eqUid = 0;
   const scroller = document.createElement('wa-scroller');
   const container = document.createElement('div');
   container.className = 'eq-sliders wa-split';
@@ -271,7 +276,13 @@ function createEqControls(effect) {
         }
       },
     });
+    const id = `eq-band-${effect.id}-${eqUid++}`;
+    slider.id = id;
+    const tip = document.createElement('wa-tooltip');
+    tip.setAttribute('for', id);
+    tip.textContent = band.tooltip;
     container.appendChild(slider);
+    container.appendChild(tip);
   }
   scroller.appendChild(container);
   return scroller;
@@ -281,14 +292,14 @@ function createCompressorControls(effect) {
   const container = document.createElement('div');
   container.className = 'wa-stack wa-gap-s';
   const params = [
-    { key: 'threshold', label: 'Threshold', min: -60, max: 0, step: 1, formatter: v => `${v} dB` },
-    { key: 'ratio', label: 'Ratio', min: 1, max: 20, step: 0.5, formatter: v => `${v}:1` },
-    { key: 'attack', label: 'Attack', min: 0, max: 200, step: 1, formatter: v => `${v} ms` },
-    { key: 'release', label: 'Release', min: 10, max: 1000, step: 10, formatter: v => `${v} ms` },
+    { key: 'threshold', label: 'Threshold', min: -60, max: 0, step: 1, formatter: v => `${v} dB`, hint: 'How loud a sound has to be before it gets turned down.' },
+    { key: 'ratio', label: 'Ratio', min: 1, max: 20, step: 0.5, formatter: v => `${v}:1`, hint: 'How much the loud parts get squished down.' },
+    { key: 'attack', label: 'Attack', min: 0, max: 200, step: 1, formatter: v => `${v} ms`, hint: 'How quickly the compressor kicks in after a loud sound.' },
+    { key: 'release', label: 'Release', min: 10, max: 1000, step: 10, formatter: v => `${v} ms`, hint: 'How quickly the compressor lets go after the sound gets quiet.' },
   ];
   for (const p of params) {
     container.appendChild(makeSlider({
-      label: p.label,
+      label: p.label, hint: p.hint,
       min: p.min, max: p.max, value: effect.params[p.key], step: p.step,
       formatter: p.formatter,
       onInput: v => {
@@ -309,13 +320,13 @@ function createDelayControls(effect) {
   const container = document.createElement('div');
   container.className = 'wa-stack wa-gap-s';
   const params = [
-    { key: 'time', label: 'Time', min: 1, max: 2000, step: 1, formatter: v => `${v} ms` },
-    { key: 'feedback', label: 'Feedback', min: 0, max: 100, step: 1, formatter: v => `${v}%` },
-    { key: 'mix', label: 'Mix', min: 0, max: 100, step: 1, formatter: v => `${v}%` },
+    { key: 'time', label: 'Time', min: 1, max: 2000, step: 1, formatter: v => `${v} ms`, hint: 'How long before each echo repeats.' },
+    { key: 'feedback', label: 'Feedback', min: 0, max: 100, step: 1, formatter: v => `${v}%`, hint: 'How many times the echo repeats — higher means more echoes.' },
+    { key: 'mix', label: 'Mix', min: 0, max: 100, step: 1, formatter: v => `${v}%`, hint: 'How much echo you hear compared to the original sound.' },
   ];
   for (const p of params) {
     container.appendChild(makeSlider({
-      label: p.label,
+      label: p.label, hint: p.hint,
       min: p.min, max: p.max, value: effect.params[p.key], step: p.step,
       formatter: p.formatter,
       onInput: v => {
@@ -348,7 +359,8 @@ function createEffectCard(effect, index, total) {
   const header = document.createElement('div');
   header.slot = 'header';
   header.className = 'wa-cluster wa-gap-xs';
-  header.innerHTML = `<wa-icon name="${meta.icon}"></wa-icon><span>${meta.label}</span>`;
+  const headerId = `effect-header-${effect.id}`;
+  header.innerHTML = `<span id="${headerId}" class="wa-cluster wa-gap-xs"><wa-icon name="${meta.icon}"></wa-icon><span>${meta.label}</span></span><wa-tooltip for="${headerId}">${meta.description}</wa-tooltip>`;
 
   const actions = document.createElement('div');
   actions.slot = 'header-actions';

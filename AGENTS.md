@@ -23,13 +23,14 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 - **Rendering**: Source card and output card are created once at init and persist across renders. An `#effects-container` div between them is rebuilt on every state change. Slider `input` events update `params` and `AudioParam` values in-place without re-render.
 - **Audio graph**: `initAudio()` creates AudioContext and MediaElementSourceNode lazily on first file selection. `buildAudioGraph()` reconnects the full chain (source → effects → outputGain → destination) at the end of every `render()` call. Each effect stores its audio nodes on `effect._audioNodes` for real-time parameter updates from sliders.
 - **Events**: `wa-select` on the Add dropdown; click delegation on `#chain` for action buttons (`data-action` / `data-id` attributes)
-- **Effect types** defined in `EFFECTS` map with label, icon, and `defaults` for initial parameter values
+- **Effect types** defined in `EFFECTS` map with label, icon, description, and `defaults` for initial parameter values
   - **Equalization**: 9-band graphic EQ (32 Hz–16 kHz) using peaking BiquadFilterNodes. Vertical sliders inside a `<wa-scroller>` for mobile support. Has a reset button.
   - **Compressor**: DynamicsCompressorNode with threshold, ratio, attack, release
   - **Delay**: DelayNode with feedback loop (capped at 0.95) and dry/wet mix
 - **Controls**: EQ uses vertical `<wa-slider>` elements (9-band) in a `<wa-scroller>`; compressor and delay use horizontal `<wa-slider>` stacks. Output card has a volume slider controlling a GainNode.
 - **Source card**: Uses `<wa-file-input>` for audio file selection with drag-and-drop support. Native `<audio>` element for playback with volume slider hidden via CSS (volume controlled by output GainNode).
-- **Shared helper**: `makeSlider(opts)` builds configured `<wa-slider>` elements with formatter and input binding
+- **Shared helper**: `makeSlider(opts)` builds configured `<wa-slider>` elements with formatter, input binding, and optional `hint` text (used on horizontal sliders)
+- **Tooltips**: Effect card headers have `<wa-tooltip>` on the icon+label describing what the effect does. EQ band sliders use `<wa-tooltip for="...">` as siblings in the light DOM (since slotted content inside `wa-slider` shadow DOM isn't reachable by tooltip `for`). Compressor/delay sliders use the built-in `hint` attribute instead. `wa-tooltip` requires a `for` attribute pointing to a target element's `id` — it does NOT wrap its target or use a `content` attribute.
 
 ## Web Awesome Utilities Used
 
@@ -37,6 +38,8 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 - `wa-gap-*` -- spacing between items
 - `wa-align-items-center`, `wa-align-self-stretch` -- alignment
 - `wa-heading-xl` -- page title typography
+- `wa-tooltip` -- hover descriptions on effect card headers and EQ band sliders
+- `wa-slider[hint]` -- inline descriptions on compressor/delay sliders
 
 ## Running Locally
 
