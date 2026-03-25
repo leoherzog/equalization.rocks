@@ -1,4 +1,8 @@
-#chain {
+#tabs {
+  --track-color: var(--wa-color-border-normal);
+}
+
+#tabs wa-tab-panel::part(base) {
   max-width: 600px;
   margin: var(--wa-space-l) auto;
   padding: 0 var(--wa-space-m);

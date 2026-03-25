@@ -67,7 +67,16 @@
       </div>
     </header>
 
-    <div id="chain" class="wa-stack wa-align-items-center wa-gap-0"></div>
+    <wa-tab-group id="tabs">
+      <wa-tab slot="nav" panel="signal-chain">
+        <wa-icon slot="start" name="diagram-project"></wa-icon>
+        Signal Chain
+      </wa-tab>
+
+      <wa-tab-panel name="signal-chain">
+        <div id="chain" class="wa-stack wa-align-items-center wa-gap-0"></div>
+      </wa-tab-panel>
+    </wa-tab-group>
   </wa-page>
   <script type="module" src="app.js"></script>
 </body>
