@@ -4,7 +4,7 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 
 ## Tech Stack
 
-- **Web Awesome Pro** (v3.3.1) loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
+- **Web Awesome Pro** (v3.5.0) loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
 - **Web Audio API** -- real-time audio processing (BiquadFilterNode, DynamicsCompressorNode, DelayNode, GainNode)
 - **Vanilla JS** -- no framework, no bundler, no build step
 - Static HTML/CSS/JS served directly
@@ -22,7 +22,7 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 - **State**: `chain` array of `{ id, type, params }` objects in `app.js`; `outputVolume` scalar; Web Audio refs (`audioCtx`, `sourceNode`, `outputGainNode`, `activeNodes`)
 - **Rendering**: Source card and output card are created once at init and persist across renders. An `#effects-container` div between them is rebuilt on every state change. Slider `input` events update `params` and `AudioParam` values in-place without re-render.
 - **Audio graph**: `initAudio()` creates AudioContext and MediaElementSourceNode lazily on first file selection. `buildAudioGraph()` reconnects the full chain (source → effects → outputGain → destination) at the end of every `render()` call. Each effect stores its audio nodes on `effect._audioNodes` for real-time parameter updates from sliders.
-- **Events**: `wa-select` on the Add dropdown; click delegation on `#chain` for action buttons (`data-action` / `data-id` attributes)
+- **Events**: `wa-select` on the Add dropdown (a floating action button in the bottom-right corner, outside `<wa-page>`, using `placement="top-end"` so the menu opens upward); click delegation on `#chain` for action buttons (`data-action` / `data-id` attributes)
 - **Effect types** defined in `EFFECTS` map with label, icon, description, and `defaults` for initial parameter values
   - **Equalization**: 9-band graphic EQ (32 Hz–16 kHz) using peaking BiquadFilterNodes. Vertical sliders inside a `<wa-scroller>` for mobile support. Has a reset button.
   - **Compressor**: DynamicsCompressorNode with threshold, ratio, attack, release
@@ -52,6 +52,16 @@ uv run python -m http.server
 ```
 
 Open `http://localhost:8000`.
+
+## NPM with `.dev.vars`
+
+`.dev.vars` holds `WEBAWESOME_NPM_TOKEN` (gitignored). To run any `npm` command with that token exported as an env var, pipe the file through `xargs` into `env`:
+
+```sh
+env $(cat .dev.vars | xargs) npm <command>
+```
+
+`cat` emits `KEY=value` lines, `xargs` collapses them into a space-separated arg list, and `env` applies them to the `npm` invocation without leaking them into the parent shell. Do **not** `source .dev.vars` — the values are unquoted and would persist in the current shell.
 
 ## Web Awesome Reference
 

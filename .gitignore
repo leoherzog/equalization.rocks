@@ -2,3 +2,15 @@ package*.json
 node_modules/
 .claude
 .dev.vars
+.env
+.env.local
+.env*.local
+.wrangler/
+media/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.vscode/
+.idea/
+*.swp

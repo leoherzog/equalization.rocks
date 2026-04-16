@@ -12,59 +12,23 @@
   <wa-page>
     <header slot="header">
       <span class="wa-heading-xl"><wa-icon name="message-music"></wa-icon> Equalization Rocks!</span>
-      <div class="wa-cluster wa-gap-xs">
-        <wa-dropdown id="theme-dropdown">
-          <wa-button slot="trigger" appearance="plain">
-            <wa-icon id="theme-icon" name="circle-half-stroke"></wa-icon>
-          </wa-button>
-          <wa-dropdown-item value="auto">
-            <wa-icon slot="icon" name="circle-half-stroke"></wa-icon>
-            Auto
-          </wa-dropdown-item>
-          <wa-dropdown-item value="light">
-            <wa-icon slot="icon" name="sun-bright"></wa-icon>
-            Light
-          </wa-dropdown-item>
-          <wa-dropdown-item value="dark">
-            <wa-icon slot="icon" name="moon"></wa-icon>
-            Dark
-          </wa-dropdown-item>
-        </wa-dropdown>
-        <wa-dropdown id="add-dropdown">
-          <wa-button slot="trigger" variant="brand" with-caret>
-            <wa-icon slot="start" name="plus"></wa-icon>
-            Add
-          </wa-button>
-          <wa-dropdown-item value="equalization">
-            <wa-icon slot="icon" name="sliders"></wa-icon>
-            Equalization
-          </wa-dropdown-item>
-          <wa-dropdown-item value="compressor">
-            <wa-icon slot="icon" name="compress"></wa-icon>
-            Compressor
-          </wa-dropdown-item>
-          <wa-dropdown-item value="delay">
-            <wa-icon slot="icon" name="clock"></wa-icon>
-            Delay
-          </wa-dropdown-item>
-          <wa-dropdown-item value="reverb">
-            <wa-icon slot="icon" name="church"></wa-icon>
-            Reverb
-          </wa-dropdown-item>
-          <wa-dropdown-item value="distortion">
-            <wa-icon slot="icon" name="bolt"></wa-icon>
-            Distortion
-          </wa-dropdown-item>
-          <wa-dropdown-item value="gate">
-            <wa-icon slot="icon" name="door-closed"></wa-icon>
-            Noise Gate
-          </wa-dropdown-item>
-          <wa-dropdown-item value="panner">
-            <wa-icon slot="icon" name="arrows-left-right"></wa-icon>
-            Stereo Panner
-          </wa-dropdown-item>
-        </wa-dropdown>
-      </div>
+      <wa-dropdown id="theme-dropdown">
+        <wa-button slot="trigger" appearance="plain">
+          <wa-icon id="theme-icon" name="circle-half-stroke"></wa-icon>
+        </wa-button>
+        <wa-dropdown-item value="auto">
+          <wa-icon slot="icon" name="circle-half-stroke"></wa-icon>
+          Auto
+        </wa-dropdown-item>
+        <wa-dropdown-item value="light">
+          <wa-icon slot="icon" name="sun-bright"></wa-icon>
+          Light
+        </wa-dropdown-item>
+        <wa-dropdown-item value="dark">
+          <wa-icon slot="icon" name="moon"></wa-icon>
+          Dark
+        </wa-dropdown-item>
+      </wa-dropdown>
     </header>
 
     <wa-tab-group id="tabs">
@@ -78,6 +42,43 @@
       </wa-tab-panel>
     </wa-tab-group>
   </wa-page>
+
+  <div class="fab">
+  <wa-dropdown id="add-dropdown" placement="top-end" distance="8">
+    <wa-button slot="trigger" variant="brand" size="large" pill>
+      <wa-icon name="plus"></wa-icon>
+    </wa-button>
+    <wa-dropdown-item value="equalization">
+      <wa-icon slot="icon" name="sliders"></wa-icon>
+      Equalization
+    </wa-dropdown-item>
+    <wa-dropdown-item value="compressor">
+      <wa-icon slot="icon" name="compress"></wa-icon>
+      Compressor
+    </wa-dropdown-item>
+    <wa-dropdown-item value="delay">
+      <wa-icon slot="icon" name="clock"></wa-icon>
+      Delay
+    </wa-dropdown-item>
+    <wa-dropdown-item value="reverb">
+      <wa-icon slot="icon" name="church"></wa-icon>
+      Reverb
+    </wa-dropdown-item>
+    <wa-dropdown-item value="distortion">
+      <wa-icon slot="icon" name="bolt"></wa-icon>
+      Distortion
+    </wa-dropdown-item>
+    <wa-dropdown-item value="gate">
+      <wa-icon slot="icon" name="door-closed"></wa-icon>
+      Noise Gate
+    </wa-dropdown-item>
+    <wa-dropdown-item value="panner">
+      <wa-icon slot="icon" name="arrows-left-right"></wa-icon>
+      Stereo Panner
+    </wa-dropdown-item>
+  </wa-dropdown>
+  </div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>

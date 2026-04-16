@@ -45,3 +45,18 @@
 .eq-sliders wa-slider {
   min-width: 50px;
 }
+
+.fab {
+  position: fixed;
+  bottom: var(--wa-space-l);
+  right: var(--wa-space-l);
+  z-index: 10;
+}
+
+.fab wa-button::part(base) {
+  box-shadow: var(--wa-shadow-l);
+}
+
+.fab wa-button::part(label) {
+  font-size: var(--wa-font-size-xl);
+}
