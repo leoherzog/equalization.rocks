@@ -4,7 +4,7 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 
 ## Tech Stack
 
-- **Web Awesome Pro** (v3.5.0) loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
+- **Web Awesome Pro** (v3.7.0) loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
 - **Web Audio API** -- real-time audio processing (BiquadFilterNode, DynamicsCompressorNode, DelayNode, GainNode)
 - **Vanilla JS** -- no framework, no bundler, no build step
 - Static HTML/CSS/JS served directly
