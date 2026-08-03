@@ -4,7 +4,7 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 
 ## Tech Stack
 
-- **Web Awesome Pro** (v3.7.0) loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
+- **Web Awesome Pro** loaded via CDN kit script -- provides all UI components (`wa-page`, `wa-card`, `wa-dropdown`, `wa-button`, `wa-icon`, `wa-slider`, `wa-file-input`, `wa-scroller`) and Font Awesome icons
 - **Web Audio API** -- real-time audio processing (BiquadFilterNode, DynamicsCompressorNode, DelayNode, GainNode)
 - **Vanilla JS** -- no framework, no bundler, no build step
 - Static HTML/CSS/JS served directly
@@ -66,3 +66,18 @@ env $(cat .dev.vars | xargs) npm <command>
 ## Web Awesome Reference
 
 Use the `webawesome` skill for component API docs. Components auto-load via the kit script -- no cherry-pick imports needed. The kit also loads a custom "Awesome" theme variant.
+
+### Versioning
+
+Two version knobs exist, and they are independent:
+
+1. **The kit** (`https://kit.webawesome.com/<token>.js`) pins `product_version` server-side -- this is what the browser actually loads. Change it in the kit settings at <https://webawesome.com/> (account dashboard); it cannot be bumped from this repo.
+2. **The npm package** (`@web.awesome.me/webawesome-pro` in `package.json`) is local reference/tooling only -- nothing in `index.html` or `app.js` imports from `node_modules`.
+
+When updating, bump both and keep them in sync. After bumping the kit to 3.11+, drop the transitional `::part(base)` fallback on the FAB button in `styles.css` (see the comment there).
+
+To check what the kit currently serves:
+
+```sh
+curl -s "https://kit.webawesome.com/c091c003930a4b78.js" | head -c 800
+```
