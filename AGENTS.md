@@ -74,7 +74,9 @@ Two version knobs exist, and they are independent:
 1. **The kit** (`https://kit.webawesome.com/<token>.js`) pins `product_version` server-side -- this is what the browser actually loads. Change it in the kit settings at <https://webawesome.com/> (account dashboard); it cannot be bumped from this repo.
 2. **The npm package** (`@web.awesome.me/webawesome-pro` in `package.json`) is local reference/tooling only -- nothing in `index.html` or `app.js` imports from `node_modules`.
 
-When updating, bump both and keep them in sync. After bumping the kit to 3.11+, drop the transitional `::part(base)` fallback on the FAB button in `styles.css` (see the comment there).
+When updating, bump both and keep them in sync. Both are currently on **3.12.0**.
+
+As of 3.12 the generic `base` CSS part is deprecated across all components in favor of named parts (`button`, `label`, etc.). `wa-button` still emits `part="base button"`, but style against the named part. The transitional `::part(base)` fallback on the FAB button has been removed from `styles.css`.
 
 To check what the kit currently serves:
 

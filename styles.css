@@ -53,10 +53,6 @@
   z-index: 10;
 }
 
-/* `base` is deprecated in favor of `button` (WA 3.11), but the kit still serves
-   3.7.0, where the `button` part does not exist yet. 3.11 emits `part="base button"`,
-   so both selectors are correct there. Drop the `base` line once the kit is on 3.11. */
-.fab wa-button::part(base),
 .fab wa-button::part(button) {
   box-shadow: var(--wa-shadow-l);
 }
