@@ -72,11 +72,13 @@ Use the `webawesome` skill for component API docs. Components auto-load via the 
 Two version knobs exist, and they are independent:
 
 1. **The kit** (`https://kit.webawesome.com/<token>.js`) pins `product_version` server-side -- this is what the browser actually loads. Change it in the kit settings at <https://webawesome.com/> (account dashboard); it cannot be bumped from this repo.
-2. **The npm package** (`@web.awesome.me/webawesome-pro` in `package.json`) is local reference/tooling only -- nothing in `index.html` or `app.js` imports from `node_modules`.
+2. **The npm package** (`@web.awesome.me/webawesome-pro` in `package.json`) is local reference/tooling only -- nothing in `index.html` or `app.js` imports from `node_modules`. It is still tracked in git: `package.json` and `package-lock.json` are the only record of which version the bundled `webawesome` skill docs and type definitions came from, and the lockfile is what makes the install reproducible and dependency versions auditable. `node_modules/` stays ignored.
 
 When updating, bump both and keep them in sync. Both are currently on **3.12.0**.
 
-As of 3.12 the generic `base` CSS part is deprecated across all components in favor of named parts (`button`, `label`, etc.). `wa-button` still emits `part="base button"`, but style against the named part. The transitional `::part(base)` fallback on the FAB button has been removed from `styles.css`.
+The generic `base` CSS part is deprecated in favor of a part named after the component itself -- `wa-button` exposes `button`, `wa-details` exposes `details`. Existing `::part(base)` selectors keep working until the next major version, but new styles should target the component's own name, so the transitional `::part(base)` fallback on the FAB button has been removed from `styles.css`. `wa-button` still emits `part="base button"`.
+
+`label` is **not** a replacement for `base`. It is a separate, non-deprecated part on `wa-button` that wraps the default slot (`<slot part="label" class="label">`), which is what `.fab wa-button::part(label)` sizes.
 
 To check what the kit currently serves:
 
