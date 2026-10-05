@@ -16,6 +16,15 @@ A client-side audio effects chain builder with real-time Web Audio API processin
 | `index.html` | Page shell using `<wa-page>` with header and chain container |
 | `app.js` | Chain state, render loop, add/delete/move/reset logic, Web Audio graph |
 | `styles.css` | Chain layout, connector lines, EQ slider sizing, audio control styling |
+| `assets/` | Favicons, app icons, web app manifest, Open Graph card, and `generate.py`, which renders the raster images |
+| `robots.txt`, `sitemap.xml` | Crawler directives; must stay at the site root |
+| `README.md` | Public project description and license |
+
+## SEO and Icons
+
+`index.html` carries the description, canonical link, Open Graph and Twitter card tags, and `WebApplication` JSON-LD. The canonical, `og:url`, `og:image`, and JSON-LD URLs are absolute to `https://equalization.rocks/`, since social crawlers reject relative image URLs. Keep the description identical across the meta tag, `og:description`, the JSON-LD, and `assets/site.webmanifest`.
+
+`assets/favicon.svg` is the hand-placed Font Awesome Pro `message-music` duotone glyph and the single source for every other icon. `uv run assets/generate.py` reads its two paths and renders `og-image.png`, the app icons, and `favicon.ico`, using Inter fetched from Fontsource and colors from the kit's elegant palette. Commit the rendered images; nothing renders them at deploy time.
 
 ## Architecture
 
