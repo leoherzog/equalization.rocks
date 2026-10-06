@@ -1,7 +1,7 @@
 {
   "name": "Equalization Rocks!",
   "short_name": "Equalization",
-  "description": "Load a song and build an audio effects chain in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.",
+  "description": "Build an audio effects chain or mix a multitrack recording in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.",
   "start_url": "../",
   "scope": "../",
   "display": "standalone",

@@ -60,3 +60,127 @@
 .fab wa-button::part(label) {
   font-size: var(--wa-font-size-xl);
 }
+
+/* --- Mixer --- */
+
+/* Tighter margins, condensed control labels and the 7rem faders below let whole strips fit in a 900px-tall window. */
+#tabs wa-tab-panel[name="mixer"] {
+  max-width: none;
+  margin-block: var(--wa-space-m);
+}
+
+#mx-empty {
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* The seek bar's label sits inline, so the buttons, track and timecode share one center line. */
+#mx-seek {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--wa-space-s);
+}
+
+#mx-seek::part(label) {
+  margin: 0;
+}
+
+/* The inline margin keeps the thumb's overhang at either end of the track clear of the label and timecode. */
+#mx-seek::part(slider) {
+  flex: 1;
+  margin-block: 0;
+  margin-inline: calc(var(--thumb-width) / 2);
+}
+
+/* The Master card wraps below the strips rather than leave room for fewer than two of them. */
+#mx-desk {
+  --content-percentage: calc(2 * 10rem + var(--wa-space-s));
+}
+
+.strip {
+  flex: none;
+  width: 10rem;
+  --spacing: var(--wa-space-s);
+  --wa-form-control-label-line-height: var(--wa-line-height-condensed);
+}
+
+/* Each label sits close to its own track and the stack gap stays wide, so a row reads as one unit; the thumb overhangs into that gap. */
+.strip wa-slider::part(label) {
+  margin-block-end: 0;
+}
+
+/* A vertical wa-slider's track is a fixed length in its shadow styles; the host height does not change it. */
+.fader::part(track) {
+  height: 7rem;
+}
+
+/* Matches the wa-gap-xs between each master meter and its L or R, so the labels share a baseline with Volume. */
+.fader::part(slider) {
+  margin-block-end: var(--wa-space-xs);
+}
+
+meter.level {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  inline-size: 7rem;
+  block-size: 0.5rem;
+  border: 0;
+  border-radius: var(--wa-border-radius-pill);
+  background: var(--wa-color-neutral-fill-normal);
+}
+
+/* Chrome collapses the bar to about 2px across unless block-size is an explicit length. */
+meter.level::-webkit-meter-bar {
+  block-size: 0.5rem;
+  border: 0;
+  border-radius: inherit;
+  background: var(--wa-color-neutral-fill-normal);
+}
+
+/* The border-normal tokens are mid tones that read on the track in both themes; fill-loud is pastel in light. */
+meter.level::-webkit-meter-optimum-value {
+  background: var(--wa-color-success-border-normal);
+}
+
+meter.level::-webkit-meter-suboptimum-value {
+  background: var(--wa-color-warning-border-normal);
+}
+
+meter.level::-webkit-meter-even-less-good-value {
+  background: var(--wa-color-danger-border-normal);
+}
+
+meter.level:-moz-meter-optimum::-moz-meter-bar {
+  background: var(--wa-color-success-border-normal);
+}
+
+meter.level:-moz-meter-sub-optimum::-moz-meter-bar {
+  background: var(--wa-color-warning-border-normal);
+}
+
+meter.level:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+  background: var(--wa-color-danger-border-normal);
+}
+
+/* Beside the icon, a strip-wide callout leaves the message too narrow for whole words. */
+.strip wa-callout {
+  flex-direction: column;
+}
+
+/* Equal-width digits keep the seek bar beside the timecode from changing length every second. */
+#mx-clock {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Teaching text rides in each control's hint for screen readers; sighted users get it from the tooltips. */
+#mixer wa-slider::part(hint) {
+  display: none;
+}
+
+#mx-unpack {
+  inline-size: 10rem;
+}
+
+#mx-reload::part(dropzone) {
+  padding: var(--wa-space-2xs) var(--wa-space-s);
+}

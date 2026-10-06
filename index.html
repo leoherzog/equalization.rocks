@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equalization Rocks! · Audio Effects Chain in Your Browser</title>
-  <meta name="description" content="Load a song and build an audio effects chain in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.">
+  <title>Equalization Rocks! · Effects Chain and Multitrack Mixer</title>
+  <meta name="description" content="Build an audio effects chain or mix a multitrack recording in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.">
   <meta name="author" content="Leo Herzog">
   <link rel="author" href="https://herzog.tech/">
   <link rel="canonical" href="https://equalization.rocks/">
@@ -14,7 +14,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Equalization Rocks!">
   <meta property="og:title" content="Equalization Rocks!">
-  <meta property="og:description" content="Load a song and build an audio effects chain in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.">
+  <meta property="og:description" content="Build an audio effects chain or mix a multitrack recording in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.">
   <meta property="og:url" content="https://equalization.rocks/">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="https://equalization.rocks/assets/og-image.png">
@@ -35,11 +35,11 @@
     "@type": "WebApplication",
     "name": "Equalization Rocks!",
     "url": "https://equalization.rocks/",
-    "description": "Load a song and build an audio effects chain in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.",
+    "description": "Build an audio effects chain or mix a multitrack recording in your browser. Stack EQ, compression, delay, reverb, distortion, gating, and panning, and hear each change live.",
     "image": "https://equalization.rocks/assets/og-image.png",
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "Any",
-    "browserRequirements": "Requires the Web Audio API",
+    "browserRequirements": "Requires the Web Audio API. The Mixer needs Chrome 103, Firefox 114, or Safari 16.4.",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "author": { "@type": "Person", "name": "Leo Herzog", "url": "https://herzog.tech/" }
@@ -74,19 +74,27 @@
 
     <wa-tab-group id="tabs">
       <wa-tab slot="nav" panel="signal-chain">
-        <wa-icon slot="start" name="diagram-project"></wa-icon>
+        <wa-icon name="diagram-project"></wa-icon>
         Signal Chain
+      </wa-tab>
+      <wa-tab slot="nav" panel="mixer">
+        <wa-icon name="sliders-up"></wa-icon>
+        Mixer
       </wa-tab>
 
       <wa-tab-panel name="signal-chain">
         <div id="chain" class="wa-stack wa-align-items-center wa-gap-0"></div>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="mixer">
+        <div id="mixer"></div>
       </wa-tab-panel>
     </wa-tab-group>
   </wa-page>
 
   <div class="fab">
   <wa-dropdown id="add-dropdown" placement="top-end" distance="8">
-    <wa-button slot="trigger" variant="brand" size="large" pill>
+    <wa-button slot="trigger" variant="brand" size="l" pill>
       <wa-icon name="plus"></wa-icon>
     </wa-button>
     <wa-dropdown-item value="equalization">

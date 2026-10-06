@@ -4,9 +4,9 @@
 
 ## What is this?
 
-[Equalization Rocks!](https://equalization.rocks/) is an audio effects chain that runs entirely in your browser. Load a song, stack effects between the source and your speakers, and hear each change as you drag a slider. Playback and processing happen on your device with the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), so your audio is never uploaded.
+[Equalization Rocks!](https://equalization.rocks/) is an audio workbench that runs entirely in your browser. On the **Signal Chain** tab, you load a song, stack effects between the source and your speakers, and hear each change as you drag a slider. On the **Mixer** tab, you load a multitrack recording and balance every instrument into one finished song. Playback and processing happen on your device with the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), so your audio is never uploaded.
 
-### Features
+### Signal Chain
 
 - 🎚️ A 9-band graphic EQ from 32 Hz to 16 kHz
 - 🗜️ A compressor with threshold, ratio, attack, and release
@@ -16,8 +16,22 @@
 - 🚪 A noise gate that silences everything below its threshold
 - ↔️ A stereo panner
 - 🔀 Effects you can add, reorder, and remove while the song plays
-- 💬 Plain-language explanations for every effect and its controls
 - 📁 Drag-and-drop audio files of any format your browser can play
+
+### Mixer
+
+- 📦 Load a .zip of multitrack WAV or AIFF files, or several audio files at once
+- 🎛️ A channel strip per track with a gate, compression, three-band EQ, drive, pan, echo and reverb sends, mute, solo, a fader, and a level meter
+- 🎯 Every track plays in sample-accurate sync, so drums recorded with several mics stay in phase
+- ⏳ Playback can start a few seconds after loading while the rest unpacks in the background
+- ⏯️ Start, Stop, and a seek bar for the whole session
+- 🔊 A Master card with shared reverb and echo, a master fader, and stereo meters
+
+The Mixer needs Chrome 103, Firefox 114, Safari 16.4, or newer. Unpacked tracks live in your browser's storage until you load another session, so a large session can need a few gigabytes of free disk space. A private window keeps them in memory instead.
+
+### Everywhere
+
+- 💬 Plain-language explanations for every effect and its settings
 - 🌗 Light, dark, and automatic themes
 
 ## Running Locally
